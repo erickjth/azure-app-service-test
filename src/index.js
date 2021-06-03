@@ -34,15 +34,21 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function main() {
   let attemps = 0;
   let connected = false;
+  let lastError = '';
 
   http
     .createServer(function (req, res) {
       res.writeHead(200, { "Content-Type": "text/plain" });
-      res.write("Hello World - this is node.js\n");
+      res.write("Azure Connection Testing\n");
       res.write(`Connect status: ${JSON.stringify({
+        server: process.env.SQL_SERVER_NAME,
+        database: process.env.SQL_SERVER_DB_NAME,
         connected: connected ? "success" : "failed",
         attemps,
-      })}`);
+        lastError: lastError?.message,
+        lastErrorStack: lastError?.stack
+      }, null, 4)}`);
+
       res.end("\nbye!");
     })
     .listen(port, "");
@@ -55,7 +61,7 @@ async function main() {
         console.log(`Retrying (attemp #${attemps})....`);
       }
 
-      console.log("Connect with env", JSON.stringify(process.env));
+      console.log("Connect with env");
 
       await connect();
 
@@ -66,6 +72,7 @@ async function main() {
       break;
     } catch (e) {
       console.log("Error trying to connect", e);
+      lastError = e;
       console.log("Retrying in 5ms");
       attemps++;
       await sleep(5000);
