@@ -4,20 +4,20 @@ const { Connection } = require("tedious");
 
 const port = process.env.PORT || 8080;
 
-const connection = new Connection({
-  server: process.env.SQL_SERVER_NAME,
-  authentication: {
-    type: "azure-active-directory-msi-app-service",
-    options: {},
-  },
-  options: {
-    database: process.env.SQL_SERVER_DB_NAME,
-    encrypt: true,
-  },
-});
-
 function connect() {
   return new Promise((resolve, reject) => {
+    const connection = new Connection({
+      server: process.env.SQL_SERVER_NAME,
+      authentication: {
+        type: "azure-active-directory-msi-app-service",
+        options: {},
+      },
+      options: {
+        database: process.env.SQL_SERVER_DB_NAME,
+        encrypt: true,
+      },
+    });
+
     // Attempt to connect and execute queries if connection goes through
     connection.on("connect", (err) => {
       if (err) {
@@ -59,7 +59,7 @@ async function main() {
 
       await connect();
 
-	  connected = true;
+      connected = true;
 
       console.log("Connection successfully");
 
