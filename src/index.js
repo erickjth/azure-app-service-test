@@ -59,6 +59,8 @@ async function main() {
 
       await connect();
 
+	  connected = true;
+
       console.log("Connection successfully");
 
       break;
