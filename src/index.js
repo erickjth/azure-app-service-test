@@ -18,16 +18,14 @@ function connect() {
       },
     });
 
-    // Attempt to connect and execute queries if connection goes through
-    connection.on("connect", (err) => {
+    connection.connect((err) => {
       if (err) {
+        connection.close();
         reject(err);
       } else {
         resolve();
       }
     });
-
-    // connection.connect();
   });
 }
 
@@ -55,7 +53,7 @@ async function main() {
         console.log(`Retrying (attemp #${attemps})....`);
       }
 
-      console.log("Connect with env", process.env);
+      console.log("Connect with env", JSON.stringify(process.env));
 
       await connect();
 
