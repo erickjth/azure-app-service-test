@@ -34,20 +34,26 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function main() {
   let attemps = 0;
   let connected = false;
-  let lastError = '';
+  let lastError;
 
   http
     .createServer(function (req, res) {
       res.writeHead(200, { "Content-Type": "text/plain" });
       res.write("Azure Connection Testing\n");
-      res.write(`Connect status: ${JSON.stringify({
-        server: process.env.SQL_SERVER_NAME,
-        database: process.env.SQL_SERVER_DB_NAME,
-        connected: connected ? "success" : "failed",
-        attemps,
-        lastError: lastError?.message,
-        lastErrorStack: lastError?.stack
-      }, null, 4)}`);
+      res.write(
+        `Connect status: ${JSON.stringify(
+          {
+            server: process.env.SQL_SERVER_NAME,
+            database: process.env.SQL_SERVER_DB_NAME,
+            connected: connected ? "success" : "failed",
+            attemps,
+            lastError: lastError ? lastError.message : "",
+            lastErrorStack: lastError ? lastError.stack : "",
+          },
+          null,
+          4
+        )}`
+      );
 
       res.end("\nbye!");
     })
