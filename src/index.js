@@ -39,10 +39,10 @@ async function main() {
     .createServer(function (req, res) {
       res.writeHead(200, { "Content-Type": "text/plain" });
       res.write("Hello World - this is node.js\n");
-      res.write("Connect status: ", JSON.stringify({
+      res.write(`Connect status: ${JSON.stringify({
         connected: connected ? "success" : "failed",
         attemps,
-      }));
+      })}`);
       res.end("\nbye!");
     })
     .listen(port, "");
