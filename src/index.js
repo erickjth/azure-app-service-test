@@ -39,7 +39,6 @@ async function main() {
     .createServer(function (req, res) {
       res.writeHead(200, { "Content-Type": "text/plain" });
       res.write("Hello World - this is node.js\n");
-      res.write("Date on server: " + now.toGMTString());
       res.write("Connect status: ", { connected });
       res.end("\nbye!");
     })
