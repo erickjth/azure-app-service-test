@@ -14,45 +14,45 @@ const connection = new Connection({
 });
 
 function connect() {
-	return new Promise((resolve, reject) => {
-		// Attempt to connect and execute queries if connection goes through
-		connection.on("connect", (err) => {
-			if (err) {
-				reject(err)
-			} else {
-				resolve()
-			}
-		  });
+  return new Promise((resolve, reject) => {
+    // Attempt to connect and execute queries if connection goes through
+    connection.on("connect", (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
 
-		  connection.connect();
-	});
+    connection.connect();
+  });
 }
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function main() {
-	let isRetrying = false;
+  let isRetrying = false;
 
-	while(true) {
-		try {
-			if (isRetrying) {
-				console.log('Retrying....');
-			}
+  while (true) {
+    try {
+      if (isRetrying) {
+        console.log("Retrying....");
+      }
 
-			console.log('Connect with env', process.env);
+      console.log("Connect with env", process.env);
 
-			await connect();
+      await connect();
 
-			console.log('Connection successfully');
+      console.log("Connection successfully");
 
-			break;
-		} catch (e) {
-			console.log('Error trying to connect', e);
-			console.log('Retrying in 5ms');
-			isRetrying = true;
-			await sleep(5000);
-		}
-	}
+      break;
+    } catch (e) {
+      console.log("Error trying to connect", e);
+      console.log("Retrying in 5ms");
+      isRetrying = true;
+      await sleep(5000);
+    }
+  }
 }
 
 main();
