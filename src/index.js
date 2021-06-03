@@ -31,12 +31,15 @@ function connect() {
   });
 }
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, 10 ** ms));
+
+const msToSec = ms => Math.floor((ms/1000));
 
 async function main() {
   let attemps = 0;
   let connected = false;
   let lastError;
+  let maxAttempt = 10;
 
   http
     .createServer(function (req, res) {
@@ -59,12 +62,17 @@ async function main() {
 
       res.end("\nbye!");
     })
-    .listen(port, "");
+    .listen(port);
 
   console.log("Server running at port: " + port);
 
   while (true) {
     try {
+      if (attemps > maxAttempt) {
+        console.log(`Max attempt reached!`);
+        break;
+      }
+
       if (attemps > 0) {
         console.log(`Retrying (attemp #${attemps})....`);
       }
@@ -81,9 +89,9 @@ async function main() {
     } catch (e) {
       console.log("Error trying to connect", e);
       lastError = e;
-      console.log("Retrying in 5ms");
       attemps++;
-      await sleep(5000);
+      console.log(`Retrying in ${msToSec(attemps ** 10)}s`);
+      await sleep(attemps);
     }
   }
 }
