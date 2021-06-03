@@ -10,7 +10,9 @@ function connect() {
       server: process.env.SQL_SERVER_NAME,
       authentication: {
         type: "azure-active-directory-msi-app-service",
-        options: {},
+        options: {
+          clientId: process.env.SQL_SERVER_CLIENT_ID
+        },
       },
       options: {
         database: process.env.SQL_SERVER_DB_NAME,
