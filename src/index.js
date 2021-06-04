@@ -1,6 +1,7 @@
 require("dotenv").config();
 const http = require("http");
 const { Connection } = require("tedious");
+const msRestNodeAuth= require("@azure/ms-rest-nodeauth");
 
 const port = 8080;
 
@@ -31,6 +32,12 @@ function connect() {
   });
 }
 
+function getToken() {
+  return msRestNodeAuth.loginWithAppServiceMSI({
+    clientId: process.env.SQL_SERVER_CLIENT_ID
+  });
+}
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, 10 ** ms));
 
 const msToSec = ms => Math.floor((ms/1000));
@@ -40,12 +47,14 @@ async function main() {
   let connected = false;
   let lastError;
   let maxAttempt = 10;
+  let tokenResponse;
 
   http
     .createServer(async function (req, res) {
       res.writeHead(200, { "Content-Type": "application/json" });
 
       try {
+        tokenResponse = await getToken();
         await connect();
         connected = true;
       } catch (e) {
@@ -60,6 +69,7 @@ async function main() {
           connected: connected ? "success" : "failed",
           lastError: lastError ? lastError.message : "",
           lastErrorStack: lastError ? lastError.stack : "",
+          tokenResponse
         },
         null,
         4

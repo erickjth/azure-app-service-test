@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@azure/ms-rest-nodeauth": "^3.0.10",
     "@azure/msal-node": "^1.1.0",
     "dotenv": "^8.2.0",
     "tedious": "^11.0.8",
