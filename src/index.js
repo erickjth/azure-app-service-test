@@ -32,10 +32,12 @@ function connect() {
   });
 }
 
-function getToken() {
-  return msRestNodeAuth.loginWithAppServiceMSI({
-    clientId: process.env.SQL_SERVER_CLIENT_ID
+async function getToken() {
+  const credentials = await msRestNodeAuth.loginWithAppServiceMSI({
+    clientId: process.env.SQL_SERVER_CLIENT_ID,
   });
+
+  return credentials.getToken()
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, 10 ** ms));
