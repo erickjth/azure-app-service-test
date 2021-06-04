@@ -35,6 +35,7 @@ function connect() {
 async function getToken() {
   const credentials = await msRestNodeAuth.loginWithAppServiceMSI({
     clientId: process.env.SQL_SERVER_CLIENT_ID,
+    resource: 'https://database.windows.net/.default'
   });
 
   return credentials.getToken()
