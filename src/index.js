@@ -5,17 +5,24 @@ const msRestNodeAuth = require("@azure/ms-rest-nodeauth");
 
 const port = 8080;
 
-function connect() {
+function connect(accessToken) {
   return new Promise((resolve, reject) => {
     const connection = new Connection({
       server: process.env.SQL_SERVER_NAME,
-      authentication: {
-        type: "azure-active-directory-msi-app-service",
-        options: {
-          clientId: process.env.SQL_SERVER_CLIENT_ID,
-          resource: "https://database.windows.net",
-        },
-      },
+      authentication: accessToken
+        ? {
+            type: "azure-active-directory-access-token",
+            options: {
+              token: accessToken,
+            },
+          }
+        : {
+            type: "azure-active-directory-msi-app-service",
+            options: {
+              clientId: process.env.SQL_SERVER_CLIENT_ID,
+              resource: "https://database.windows.net",
+            },
+          },
       options: {
         database: process.env.SQL_SERVER_DB_NAME,
         encrypt: true,
@@ -59,7 +66,7 @@ async function main() {
 
       try {
         tokenResponse = await getToken();
-        await connect();
+        await connect(tokenResponse.accessToken);
         connected = true;
       } catch (e) {
         connected = false;
