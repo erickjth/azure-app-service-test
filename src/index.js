@@ -1,7 +1,7 @@
 require("dotenv").config();
 const http = require("http");
 const { Connection } = require("tedious");
-const msRestNodeAuth= require("@azure/ms-rest-nodeauth");
+const msRestNodeAuth = require("@azure/ms-rest-nodeauth");
 
 const port = 8080;
 
@@ -12,7 +12,8 @@ function connect() {
       authentication: {
         type: "azure-active-directory-msi-app-service",
         options: {
-          clientId: process.env.SQL_SERVER_CLIENT_ID
+          clientId: process.env.SQL_SERVER_CLIENT_ID,
+          resource: "https://database.windows.net",
         },
       },
       options: {
@@ -35,15 +36,15 @@ function connect() {
 async function getToken() {
   const credentials = await msRestNodeAuth.loginWithAppServiceMSI({
     clientId: process.env.SQL_SERVER_CLIENT_ID,
-    resource: 'https://database.windows.net'
+    resource: "https://database.windows.net",
   });
 
-  return credentials.getToken()
+  return credentials.getToken();
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, 10 ** ms));
 
-const msToSec = ms => Math.floor((ms/1000));
+const msToSec = (ms) => Math.floor(ms / 1000);
 
 async function main() {
   let attemps = 0;
@@ -65,20 +66,22 @@ async function main() {
         lastError = e;
       }
 
-      res.write(JSON.stringify(
-        {
-          server: process.env.SQL_SERVER_NAME,
-          database: process.env.SQL_SERVER_DB_NAME,
-          connected: connected ? "success" : "failed",
-          lastError: lastError ? lastError.message : "",
-          lastErrorStack: lastError ? lastError.stack : "",
-          tokenResponse
-        },
-        null,
-        4
-      ));
+      res.write(
+        JSON.stringify(
+          {
+            server: process.env.SQL_SERVER_NAME,
+            database: process.env.SQL_SERVER_DB_NAME,
+            connected: connected ? "success" : "failed",
+            lastError: lastError ? lastError.message : "",
+            lastErrorStack: lastError ? lastError.stack : "",
+            tokenResponse,
+          },
+          null,
+          4
+        )
+      );
 
-      res.end('');
+      res.end("");
     })
     .listen(port);
 
