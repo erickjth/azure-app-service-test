@@ -43,7 +43,7 @@ function connect(accessToken) {
 async function getToken() {
   const credentials = await msRestNodeAuth.loginWithAppServiceMSI({
     clientId: process.env.SQL_SERVER_CLIENT_ID,
-    resource: "https://database.windows.net",
+    resource: "https://database.windows.net/",
   });
 
   return credentials.getToken();
@@ -76,6 +76,7 @@ async function main() {
       res.write(
         JSON.stringify(
           {
+            version: 1,
             server: process.env.SQL_SERVER_NAME,
             database: process.env.SQL_SERVER_DB_NAME,
             connected: connected ? "success" : "failed",
