@@ -42,58 +42,63 @@ async function main() {
   let maxAttempt = 10;
 
   http
-    .createServer(function (req, res) {
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.write("Azure Connection Testing\n");
-      res.write(
-        `Connect status: ${JSON.stringify(
-          {
-            server: process.env.SQL_SERVER_NAME,
-            database: process.env.SQL_SERVER_DB_NAME,
-            connected: connected ? "success" : "failed",
-            attemps,
-            lastError: lastError ? lastError.message : "",
-            lastErrorStack: lastError ? lastError.stack : "",
-          },
-          null,
-          4
-        )}`
-      );
+    .createServer(async function (req, res) {
+      res.writeHead(200, { "Content-Type": "application/json" });
 
-      res.end("\nbye!");
+      try {
+        await connect();
+        connected = true;
+      } catch (e) {
+        connected = false;
+        lastError = e;
+      }
+
+      res.write(JSON.stringify(
+        {
+          server: process.env.SQL_SERVER_NAME,
+          database: process.env.SQL_SERVER_DB_NAME,
+          connected: connected ? "success" : "failed",
+          lastError: lastError ? lastError.message : "",
+          lastErrorStack: lastError ? lastError.stack : "",
+        },
+        null,
+        4
+      ));
+
+      res.end('');
     })
     .listen(port);
 
   console.log("Server running at port: " + port);
 
-  while (true) {
-    try {
-      if (attemps > maxAttempt) {
-        console.log(`Max attempt reached!`);
-        break;
-      }
+  // while (true) {
+  //   try {
+  //     if (attemps > maxAttempt) {
+  //       console.log(`Max attempt reached!`);
+  //       break;
+  //     }
 
-      if (attemps > 0) {
-        console.log(`Retrying (attemp #${attemps})....`);
-      }
+  //     if (attemps > 0) {
+  //       console.log(`Retrying (attemp #${attemps})....`);
+  //     }
 
-      console.log("Connect with env");
+  //     console.log("Connect with env");
 
-      await connect();
+  //     await connect();
 
-      connected = true;
+  //     connected = true;
 
-      console.log("Connection successfully");
+  //     console.log("Connection successfully");
 
-      break;
-    } catch (e) {
-      console.log("Error trying to connect", e);
-      lastError = e;
-      attemps++;
-      console.log(`Retrying in ${msToSec(attemps ** 10)}s`);
-      await sleep(attemps);
-    }
-  }
+  //     break;
+  //   } catch (e) {
+  //     console.log("Error trying to connect", e);
+  //     lastError = e;
+  //     attemps++;
+  //     console.log(`Retrying in ${msToSec(attemps ** 10)}s`);
+  //     await sleep(attemps);
+  //   }
+  // }
 }
 
 main();
